@@ -49,27 +49,17 @@ export interface Holiday {
   type: 'international' | 'thai';
 }
 
-// Added missing types for habit-related features used in constants.tsx, Dashboard.tsx, etc.
-export enum Frequency {
-  DAILY = 'DAILY',
-  WEEKLY = 'WEEKLY',
-}
-
+// Added to fix missing exports for components and services still referencing habit features
 export interface Habit {
   id: string;
   name: string;
   icon: string;
   color: string;
-  frequency: Frequency;
-  createdAt: number;
-  goalCount: number;
 }
 
 export interface CheckInLog {
-  id: string;
   habitId: string;
   date: string; // YYYY-MM-DD
-  timestamp: number;
 }
 
 export interface AIFeedback {

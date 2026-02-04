@@ -14,19 +14,26 @@ const App: React.FC = () => {
     workStartTime: '09:00',
     workEndTime: '18:00',
     officeLocation: {
-      lat: 7.802212871127979,
-      lng: 98.30375813809852
+      lat: 31.2304, // Default to a central location, can be updated in Admin
+      lng: 121.4737
     }
   });
   const [records, setRecords] = useState<AttendanceRecord[]>([]);
   const [leaveRecords, setLeaveRecords] = useState<LeaveRecord[]>([]);
+  const [isApiKeyMissing, setIsApiKeyMissing] = useState(false);
 
-  // Persistence
   useEffect(() => {
-    const storedEmployees = localStorage.getItem('att_employees');
-    const storedSettings = localStorage.getItem('att_settings');
-    const storedRecords = localStorage.getItem('att_records');
-    const storedLeaves = localStorage.getItem('att_leaves');
+    // API Key Health Check
+    const apiKey = process.env.API_KEY;
+    if (!apiKey || apiKey === 'undefined' || apiKey === '') {
+      setIsApiKeyMissing(true);
+    }
+
+    // Load Data
+    const storedEmployees = localStorage.getItem('pro_employees');
+    const storedSettings = localStorage.getItem('pro_settings');
+    const storedRecords = localStorage.getItem('pro_records');
+    const storedLeaves = localStorage.getItem('pro_leaves');
     
     if (storedEmployees) setEmployees(JSON.parse(storedEmployees));
     if (storedSettings) setSettings(JSON.parse(storedSettings));
@@ -35,14 +42,22 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('att_employees', JSON.stringify(employees));
-    localStorage.setItem('att_settings', JSON.stringify(settings));
-    localStorage.setItem('att_records', JSON.stringify(records));
-    localStorage.setItem('att_leaves', JSON.stringify(leaveRecords));
+    localStorage.setItem('pro_employees', JSON.stringify(employees));
+    localStorage.setItem('pro_settings', JSON.stringify(settings));
+    localStorage.setItem('pro_records', JSON.stringify(records));
+    localStorage.setItem('pro_leaves', JSON.stringify(leaveRecords));
   }, [employees, settings, records, leaveRecords]);
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+    <div className="min-h-screen bg-white font-sans text-slate-950 antialiased">
+      {isApiKeyMissing && (
+        <div className="bg-slate-900 text-white py-1 px-4 text-center">
+          <p className="text-[9px] font-black uppercase tracking-[0.3em]">
+            System Alert: AI Features Offline (API_KEY missing)
+          </p>
+        </div>
+      )}
+
       {view === 'employee' && (
         <EmployeeView 
           employees={employees} 

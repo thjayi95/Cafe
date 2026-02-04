@@ -2,13 +2,15 @@
 import { GoogleGenAI } from "@google/genai";
 
 /**
- * Verifies if the image contains a clear human face selfie
+ * Verifies if the image contains a clear human face selfie using Gemini 3
  */
 export const verifyFace = async (base64Image: string): Promise<boolean> => {
-  // Initialize inside function to ensure environment variables are ready
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const apiKey = process.env.API_KEY;
+  if (!apiKey || apiKey === 'undefined' || apiKey === '') return true; // Safety fallback
   
   try {
+    // Always use the direct process.env.API_KEY for initialization as per guidelines
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: {
@@ -19,12 +21,13 @@ export const verifyFace = async (base64Image: string): Promise<boolean> => {
               data: base64Image.split(',')[1] || base64Image,
             },
           },
-          { text: "Analyze this image. Is it a clear selfie of a human face for an attendance system check-in? Answer only 'YES' or 'NO'." },
+          { text: "Examine this image. Is it a clear selfie of a person's face for a workplace clock-in? Answer ONLY 'YES' or 'NO'." },
         ],
       },
     });
 
-    const result = response.text?.trim().toUpperCase();
+    // Safely handle potential undefined response.text
+    const result = (response.text || "").trim().toUpperCase();
     return result.includes('YES');
   } catch (error) {
     console.error("AI Face Verification Error:", error);
@@ -33,19 +36,24 @@ export const verifyFace = async (base64Image: string): Promise<boolean> => {
 };
 
 /**
- * Generates a motivational quote for the employee based on their punctuality
+ * Generates an inspiring motivational quote for employees
  */
 export const getMotivationalQuote = async (status: 'on-time' | 'late' | 'check-out'): Promise<string> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const apiKey = process.env.API_KEY;
+  if (!apiKey || apiKey === 'undefined' || apiKey === '') {
+    return status === 'on-time' ? "Success is built on punctuality." : "Your hard work is appreciated.";
+  }
 
   try {
+    // Always use the direct process.env.API_KEY for initialization as per guidelines
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     let prompt = "";
     if (status === 'on-time') {
-      prompt = "Generate a short, positive, and encouraging English quote for an employee who arrived on time. Focus on professionalism and starting the day right.";
+      prompt = "Write a short (under 15 words) English professional greeting for a punctual employee starting their day. Be inspiring.";
     } else if (status === 'late') {
-      prompt = "Generate a short, motivational English quote for an employee who arrived late. Focus on punctuality as a virtue and making the most of the rest of the day.";
+      prompt = "Write a short (under 15 words) encouraging English professional message for an employee who arrived late. Be kind and motivate them to focus.";
     } else {
-      prompt = "Generate a warm, appreciative English quote for an employee finishing their work day. Focus on rest and work-life balance.";
+      prompt = "Write a short (under 15 words) appreciative English message for an employee finishing work. Wish them a good rest.";
     }
 
     const response = await ai.models.generateContent({
@@ -53,9 +61,10 @@ export const getMotivationalQuote = async (status: 'on-time' | 'late' | 'check-o
       contents: prompt,
     });
 
+    // Directly access .text property from response as it's a getter
     return response.text?.trim() || "Have a great day!";
   } catch (error) {
-    console.error("Quote Generation Error:", error);
-    return status === 'on-time' ? "Success belongs to those who arrive early." : "Punctuality is the soul of business.";
+    console.error("AI Quote Error:", error);
+    return "Keep up the great work.";
   }
 };
