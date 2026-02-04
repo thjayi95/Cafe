@@ -1,0 +1,8 @@
+{
+  "name": "上班打卡",
+  "description": "一个上班打卡app",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ]
+}
