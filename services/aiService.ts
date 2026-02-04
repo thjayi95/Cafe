@@ -1,12 +1,13 @@
 
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 /**
  * Verifies if the image contains a clear human face selfie
  */
 export const verifyFace = async (base64Image: string): Promise<boolean> => {
+  // Initialize inside function to ensure environment variables are ready
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
@@ -35,6 +36,8 @@ export const verifyFace = async (base64Image: string): Promise<boolean> => {
  * Generates a motivational quote for the employee based on their punctuality
  */
 export const getMotivationalQuote = async (status: 'on-time' | 'late' | 'check-out'): Promise<string> => {
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+
   try {
     let prompt = "";
     if (status === 'on-time') {

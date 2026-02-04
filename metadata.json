@@ -1,5 +1,5 @@
 {
-  "name": "上班打卡",
+  "name": "Staff Check in-out Work",
   "description": "一个上班打卡app",
   "requestFramePermissions": [
     "camera",

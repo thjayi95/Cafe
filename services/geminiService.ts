@@ -2,9 +2,9 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { Habit, CheckInLog } from '../types';
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 export const getHabitMotivation = async (habits: Habit[], logs: CheckInLog[]) => {
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+
   const today = new Array(8).fill(0).map((_, i) => {
     const d = new Date();
     d.setDate(d.getDate() - i);
